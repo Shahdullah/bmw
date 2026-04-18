@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BMW M5 CS — The Ultimate Experience</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --accent: #d4af37; 
+    --bg: #050508;
+    --card: #0d0d12;
+    --text: #e8e4dc;
+    --m-red: #ce1126;
+    --m-blue: #0066b2;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+#cursor {
+    width: 8px; height: 8px; background: var(--accent);
+    border-radius: 50%; position: fixed; pointer-events: none;
+    z-index: 9999; transform: translate(-50%, -50%);
+    box-shadow: 0 0 15px var(--accent);
+}
+
+nav {
+    position: fixed; top: 0; width: 100%; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 60px; background: rgba(5,5,8,0.95);
+    backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.logo { font-family: 'Bebas Neue'; font-size: 32px; letter-spacing: 4px; color: #fff; cursor: pointer; text-decoration: none;}
+.logo span { color: var(--accent); }
+
+.nav-links { display: flex; gap: 30px; list-style: none; }
+.nav-links a { 
+    color: #fff; text-decoration: none; font-family: 'Bebas Neue'; 
+    font-size: 18px; letter-spacing: 2px; transition: 0.3s; cursor: pointer;
+}
+.nav-links a:hover { color: var(--accent); }
+
+section { padding: 100px 40px; max-width: 1400px; margin: 0 auto; }
+.section-header { margin-bottom: 40px; }
+.section-header h2 { font-family: 'Bebas Neue'; font-size: 64px; letter-spacing: 2px; color: #fff; line-height: 1; }
+.label { color: var(--accent); letter-spacing: 6px; font-weight: 700; text-transform: uppercase; font-size: 14px; display: block; margin-bottom: 10px; }
+
+#hero { 
+    width: 100%; height: 85vh; padding: 0; max-width: none; 
+    background: #000; position: relative; overflow: hidden;
+    margin-top: 60px;
+}
+#viewer-container {
+    width: 100%; height: 100%;
+    position: relative;
+    transition: transform 0.1s ease-out;
+}
+.ui-mask { position: absolute; left: 0; width: 100%; background: var(--bg); z-index: 25; }
+.mask-top { top: 0; height: 50px; }
+.mask-bottom { bottom: 0; height: 100px; background: linear-gradient(to top, var(--bg) 60%, transparent); }
+
+iframe { 
+    width: 100%; height: calc(100% + 120px); 
+    border: none; position: absolute; top: -45px;
+}
+
+@keyframes engine-vibration {
+    0% { transform: translate(0,0); }
+    25% { transform: translate(-3px, 3px); }
+    50% { transform: translate(3px, -3px); }
+    75% { transform: translate(-1px, 1px); }
+    100% { transform: translate(0,0); }
+}
+.shaking { animation: engine-vibration 0.08s infinite; }
+
+.hero-controls {
+    position: absolute; bottom: 40px; left: 50%;
+    transform: translateX(-50%); z-index: 30;
+    display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;
+}
+.control-btn {
+    background: rgba(17, 17, 17, 0.85); color: var(--accent); border: 1px solid var(--accent);
+    padding: 18px 45px; font-family: 'Bebas Neue'; font-size: 24px;
+    letter-spacing: 3px; cursor: pointer; transition: 0.3s; border-radius: 4px;
+    backdrop-filter: blur(5px);
+}
+.control-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); }
+.control-btn.active { background: var(--m-red); border-color: var(--m-red); color: white; pointer-events: none; }
+
+.specs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; margin: 40px 0; }
+.spec-item { background: var(--card); padding: 45px; border: 1px solid rgba(255,255,255,0.05); border-radius: 4px; transition: 0.3s; }
+.spec-item:hover { border-color: var(--accent); }
+.spec-val { display: block; font-family: 'Bebas Neue'; font-size: 52px; color: var(--accent); margin-bottom: 12px;}
+.spec-label { font-size: 16px; text-transform: uppercase; letter-spacing: 3px; color: #fff; font-weight: 700; display: block; margin-bottom: 20px; border-left: 3px solid var(--m-red); padding-left: 15px; }
+.spec-item p { line-height: 1.8; color: #aaa; font-size: 15px; }
+
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 35px; }
+.img-card { background: var(--card); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); transition: 0.4s; position: relative; }
+.img-card:hover { border-color: var(--accent); transform: translateY(-10px); }
+.img-container { width: 100%; height: 320px; background: #0a0a0f; position: relative; overflow: hidden; }
+.img-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.2s ease; }
+.image-loading {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 45px; height: 45px; border: 3px solid rgba(212, 175, 55, 0.1);
+    border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite;
+}
+.loading-text {
+    position: absolute; bottom: 30px; width: 100%; text-align: center;
+    font-size: 11px; color: var(--accent); letter-spacing: 2px; font-weight: 600;
+}
+@keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+.caption { padding: 35px; }
+.caption h3 { font-family: 'Bebas Neue'; font-size: 28px; color: #fff; margin-bottom: 15px; letter-spacing: 1px; }
+.caption p { font-size: 15px; color: #999; line-height: 1.9; }
+
+footer { padding: 80px 60px; text-align: center; border-top: 1px solid #222; background: #030305; }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<nav>
+    <a class="logo">BMW <span>M5 CS</span></a>
+    <ul class="nav-links">
+        <li><a onclick="document.getElementById('stats').scrollIntoView({behavior:'smooth'})">SPECS</a></li>
+        <li><a onclick="document.getElementById('exterior').scrollIntoView({behavior:'smooth'})">EXTERIOR</a></li>
+        <li><a onclick="document.getElementById('interior').scrollIntoView({behavior:'smooth'})">INTERIOR</a></li>
+    </ul>
+</nav>
+
+<section id="hero">
+    <div class="ui-mask mask-top"></div>
+    <div id="viewer-container">
+        <iframe 
+            id="car-frame"
+            src="https://sketchfab.com/models/dc34c3fd9056460da48317ce0ff6b998/embed?autostart=1&preload=1&transparent=1&ui_infos=0&ui_controls=0&ui_watermark=0&ui_hint=0&dnt=1" 
+            allow="autoplay; fullscreen; xr-spatial-tracking"
+            allowfullscreen
+            mozallowfullscreen="true"
+            webkitallowfullscreen="true">
+        </iframe>
+    </div>
+    <div class="ui-mask mask-bottom"></div>
+    <div class="hero-controls">
+        <button class="control-btn" id="engine-start">IGNITE V8 ENGINE</button>
+    </div>
+</section>
+
+<section id="stats">
+    <div class="section-header">
+        <span class="label">The Pinnacle of Performance</span>
+        <h2>Engineering Brilliance</h2>
+    </div>
+    <div class="specs-grid">
+        <div class="spec-item">
+            <span class="spec-val">627 HP</span>
+            <span class="spec-label">S63 M TwinPower Turbo V8</span>
+            <p>The S63 engine reaches its absolute zenith in the M5 CS, delivering a staggering 627 horsepower that redefines what is possible in a luxury sedan. This 4.4-liter powerplant is equipped with a cross-bank exhaust manifold that optimizes gas exchange to ensure lightning-fast turbo response across the entire rev range. Every component has been refined to provide relentless thrust, making it the most powerful production engine in the history of BMW M. It isn't just about the raw numbers; it's about the precision of power delivery that remains consistent even under extreme track conditions. The cooling system has been further optimized with an additional oil cooler to maintain performance during prolonged high-speed sessions.</p>
+        </div>
+        <div class="spec-item">
+            <span class="spec-val">2.9s</span>
+            <span class="spec-label">Supercar Acceleration</span>
+            <p>The M5 CS shatters boundaries with a 0-60 mph sprint of just 2.9 seconds, a figure that places it firmly in the territory of dedicated mid-engine supercars. This explosive performance is managed by the intelligent M xDrive all-wheel-drive system, which can be adjusted from a balanced AWD setting to a pure 2WD drift mode for the ultimate purist experience. The 8-speed M Steptronic transmission provides instantaneous gear shifts, ensuring that power flow to the wheels is never interrupted. This combination of traction and transmission speed allows the CS to dominate both the drag strip and the most technical sections of the Nürburgring. Detailed launch control software manages engine torque and tire slip for the perfect takeoff every time.</p>
+        </div>
+        <div class="spec-item">
+            <span class="spec-val">-154 lbs</span>
+            <span class="spec-label">CFRP Lightweight Architecture</span>
+            <p>Weight is the enemy of performance, and the M5 CS has undergone a rigorous diet to shed 154 lbs compared to the M5 Competition. Extensive use of Carbon Fiber Reinforced Plastic (CFRP) is visible throughout the car, from the vented hood to the front splitter, mirror caps, and the aggressive rear diffuser. Even the interior features lightweight carbon bucket seats that provide exceptional lateral support while contributing to the overall mass reduction. This lightweight philosophy drastically improves the car's power-to-weight ratio, resulting in sharper turn-in, reduced braking distances, and a level of agility that belies its sedan dimensions. The reduced unsprung mass at the wheels further improves suspension response on uneven surfaces.</p>
+        </div>
+    </div>
+</section>
+
+<section id="exterior">
+    <div class="section-header">
+        <span class="label">Exposed Carbon & Aero</span>
+        <h2>Exterior Detail Gallery</h2>
+    </div>
+    <div class="gallery-grid" id="ext-grid"></div>
+</section>
+
+<section id="interior" style="background: #08080c; max-width: none;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 100px 40px;">
+        <div class="section-header">
+            <span class="label">The M-Cockpit Environment</span>
+            <h2>Interior Luxury Gallery</h2>
+        </div>
+        <div class="gallery-grid" id="int-grid"></div>
+    </div>
+</section>
+
+<footer>
+    <div style="font-size: 13px; color: #666; letter-spacing: 5px; text-transform: uppercase;">BMW M PERFORMANCE DIVISION | DESIGNED BY SHAHDULLAHA</div>
+</footer>
+
+<script>
+// Exhaust Synth Logic
+let audioCtx;
+function getAudioContext() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+}
+
+function playBMWExhaust() {
+    const ctx = getAudioContext();
+    const now = ctx.currentTime;
+    const masterGain = ctx.createGain();
+    masterGain.connect(ctx.destination);
+    const layers = [
+        {f: 42, t: 'sawtooth', d: 0}, {f: 84, t: 'square', d: 12}, 
+        {f: 168, t: 'sawtooth', d: -5}, {f: 336, t: 'triangle', d: 25}
+    ];
+    masterGain.gain.setValueAtTime(0, now);
+    masterGain.gain.linearRampToValueAtTime(1.5, now + 0.05);
+    layers.forEach((l) => {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = l.t;
+        osc.frequency.setValueAtTime(l.f, now);
+        osc.detune.setValueAtTime(l.d, now);
+        g.gain.setValueAtTime(0, now);
+        osc.connect(g);
+        g.connect(masterGain);
+        g.gain.linearRampToValueAtTime(0.5, now + 0.1);
+        osc.frequency.exponentialRampToValueAtTime(l.f * 5.0, now + 0.15);
+        osc.frequency.exponentialRampToValueAtTime(l.f * 0.9, now + 1.2);
+        osc.frequency.linearRampToValueAtTime(l.f, now + 2.5);
+        osc.start(now);
+        osc.stop(now + 6);
+    });
+    masterGain.gain.exponentialRampToValueAtTime(0.4, now + 1.5);
+    masterGain.gain.linearRampToValueAtTime(0, now + 5.5);
+}
+
+function handleStart() {
+    const btn = document.getElementById('engine-start');
+    const viewer = document.getElementById('viewer-container');
+    if (btn.classList.contains('active')) return;
+    btn.classList.add('active');
+    btn.innerText = "V8 IGNITED";
+    viewer.classList.add('shaking');
+    playBMWExhaust();
+    setTimeout(() => viewer.classList.remove('shaking'), 3500);
+    setTimeout(() => { 
+        btn.classList.remove('active'); 
+        btn.innerText = "IGNITE V8 ENGINE"; 
+    }, 6000);
+}
+
+const galleryData = {
+    exterior: [
+        { 
+            img: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80",
+            title: "Iconic Gold Bronze Grille", 
+            desc: "The front fascia is instantly recognizable by the exclusive Gold Bronze finish on the kidney grille surrounds. This satin metallic hue creates a perfect contrast with the Frozen Deep Green paintwork, signaling elite M status. The grille features active shutters that manage cooling for the high-performance V8 while optimizing drag. It is framed by aggressive cooling ducts that feed the massive front radiators. Every line is sculpted to balance high-speed cooling with aerodynamic efficiency." 
+        },
+        { 
+            img: "https://images.unsplash.com/photo-1617531653332-bd46c16f4d68?w=800&q=80",
+            title: "Yellow Laser Optics", 
+            desc: "Inspired by GT racing heritage, the M5 CS features unique yellow Icon Adaptive LED Laserlights for a menacing look. These yellow tubes provide a distinct presence that harkens back to vintage race cars while using laser tech. They offer unparalleled illumination range, piercing through the dark with up to 600 meters of visibility. This design choice is a direct nod to BMW's victory at the 24 Hours of Nürburgring. The housing itself features darkened accents to emphasize the sharp 'brow' of the headlight assembly." 
+        },
+        { 
+            img: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&q=80",
+            title: "Functional Carbon Diffuser", 
+            desc: "The rear is dominated by a massive exposed carbon fiber diffuser that houses the quad stainless-steel exhaust tips. This component works in tandem with the fixed rear spoiler to manage high-speed airflow and reduce lift. Every fin and curve has been wind-tunnel tested to ensure maximum stability at 190 mph. The carbon weave is finished in high-gloss clear coat, showcasing the intricate craftsmanship involved. The exhaust system itself is tuned to provide a more resonant, high-frequency V8 roar." 
+        },
+        {
+            img: "https://images.unsplash.com/photo-1622185135505-2d795003994a?w=800&q=80",
+            title: "Forged Gold Bronze Wheels",
+            desc: "The M5 CS rides on exclusive 20-inch M forged wheels in a stunning Gold Bronze finish that matches the grille. These wheels are exceptionally lightweight, reducing unsprung mass to improve the suspension's ability to track road surfaces. Behind the spokes, the standard M Carbon Ceramic brakes are visible with red or gold calipers. This setup provides fade-free stopping power and significantly reduces weight compared to iron discs. The wheels are wrapped in track-ready Michelin Pilot Sport Cup 2 tires for ultimate mechanical grip."
+        },
+        {
+            img: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80",
+            title: "Vented CFRP Lightweight Hood",
+            desc: "One of the most striking exterior features is the CFRP hood, which features prominent cooling vents to shed engine heat. These vents are not just for show; they allow high-pressure air from the radiator to exit efficiently, reducing front-end lift. The inner side of the hood reveals the raw carbon fiber structure, highlighting the engineering focus on weight reduction. It is significantly lighter than the standard aluminum hood, contributing to the car's improved weight distribution. The sculptural lines of the hood direct air around the A-pillars to minimize wind noise."
+        },
+        {
+            img: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&q=80",
+            title: "Signature M Side Gills",
+            desc: "The side gills on the M5 CS are rendered in the signature Gold Bronze and feature integrated M5 CS branding. These vents are set into the carbon fiber front fenders and serve to relieve pressure build-up in the front wheel wells. This helps to reduce turbulence along the sides of the car, improving overall aerodynamic stability at speed. The detail of the carbon weave here matches the mirror caps and roof for a cohesive look. It serves as a subtle but powerful reminder of the vehicle's specialized track-bred lineage."
+        }
+    ],
+    interior: [
+        { 
+            img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+            title: "M Carbon Racing Seats", 
+            desc: "Inside, the driver and passenger are held by lightweight M Carbon bucket seats in Black Merino leather. These seats feature dramatic cutouts for harnesses and are accented with Mugello Red stitching. An exclusive detail is the illuminated M5 CS logo integrated into the headrests, alongside a Nürburgring map. Despite their racing pedigree, they offer full electrical adjustment and heating for comfort. The carbon shell construction reduces weight while providing the ultimate rigid connection to the chassis." 
+        },
+        { 
+            img: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&q=80",
+            title: "Alcantara Control Center", 
+            desc: "The primary touchpoint is an M Alcantara steering wheel with a red center-stripe marker at the 12 o'clock position. This material provides superior grip during intense maneuvers and remains cool even under direct sunlight. Behind the wheel sit oversized carbon fiber shift paddles that provide a satisfying mechanical click. The steering wheel also houses the programmable M1 and M2 buttons for instant chassis mode switching. The rim thickness is specifically calibrated for the driver to feel every nuance of the steering rack." 
+        },
+        { 
+            img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
+            title: "Exclusive 4-Seat Concept", 
+            desc: "The M5 CS breaks tradition by offering a dedicated four-seat layout with individual rear bucket seats. These seats mirror the design of the front buckets, ensuring all passengers experience 1.4G cornering in security. By removing the center seat, BMW saved weight and created a specialized 'cockpit for four' environment. The rear cabin features premium materials and integrated headrests for a cohesive motorsport aesthetic. It provides a unique luxury experience that feels more like a private jet than a standard performance sedan." 
+        },
+        {
+            img: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&q=80",
+            title: "Carbon Fiber Dashboard Trim",
+            desc: "The dashboard is dominated by a large piece of matte carbon fiber trim that features a glowing 'CS' logo in red. This trim replaces the standard wood or aluminum found in other 5 Series models to emphasize the car's mission. The simplified center console removes the storage bin and armrest, replacing them with a fixed, Alcantara-wrapped surface. This design choice saves weight and creates a more focused, minimalist atmosphere for the driver. Every button and dial is positioned for intuitive access during high-speed driving situations."
+        },
+        {
+            img: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=800&q=80",
+            title: "M5 CS Door Sill Finish",
+            desc: "Upon entering the vehicle, you are greeted by exclusive door sill plates made from polished carbon fiber. These plates feature the M5 CS logo, immediately signaling the special nature of the machine you are about to pilot. They are designed to withstand the rigors of frequent entry while maintaining their high-gloss premium finish. The surrounding door panels are finished in a mix of Merino leather and Alcantara for a tactile variety. This small detail reinforces the 'CS' branding throughout the entire vehicle's interior architecture."
+        },
+        {
+            img: "https://images.unsplash.com/photo-1567818735868-e71b99932e29?w=800&q=80",
+            title: "Digital Performance Cluster",
+            desc: "The M-specific digital instrument cluster provides the driver with essential performance data in a clear, high-contrast layout. It features specialized graphics for the CS model, including tire pressure, g-force meters, and turbo boost levels. The display shifts into a simplified 'Track' mode when the M buttons are pressed, focusing only on the tachometer and shift lights. This ensures that the driver remains focused on the apex rather than being distracted by unnecessary information. The head-up display project's gear position and speed directly into the driver's line of sight."
+        }
+    ]
+};
+
+function loadGalleries() {
+    const render = (data, id) => {
+        const container = document.getElementById(id);
+        for (const item of data) {
+            const card = document.createElement('div');
+            card.className = 'img-card';
+            card.innerHTML = `<div class="img-container"><div class="image-loading"></div><img src="${item.img}" alt="${item.title}" loading="lazy"></div><div class="caption"><h3>${item.title}</h3><p>${item.desc}</p></div>`;
+            container.appendChild(card);
+            const img = card.querySelector('img');
+            img.onload = () => { 
+                img.style.opacity = "1"; 
+                card.querySelector('.image-loading').style.display = 'none'; 
+            };
+            img.onerror = () => {
+                img.style.opacity = "1";
+                img.style.background = "#1a1a1a";
+                card.querySelector('.image-loading').style.display = 'none';
+            };
+        }
+    };
+    render(galleryData.exterior, 'ext-grid');
+    render(galleryData.interior, 'int-grid');
+}
+
+window.onload = () => {
+    loadGalleries();
+    document.getElementById('engine-start').addEventListener('click', handleStart);
+    document.addEventListener('mousemove', e => {
+        const c = document.getElementById('cursor');
+        c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px';
+    });
+};
+</script>
+</body>
+</html>
